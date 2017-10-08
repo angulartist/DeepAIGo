@@ -63,7 +63,8 @@ namespace DeepAIGo
 				auto lib = liberties_[POS(n)];
 
 				auto it = std::find(lib.begin(), lib.end(), pt);
-				lib.erase(it);
+				if (it != lib.end())
+					lib.erase(it);
 
 				if (board_[POS(n)] == current_player_ && lib.size() > 0)
 					return false;
