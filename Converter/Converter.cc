@@ -46,6 +46,8 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 	H5Pset_chunk(c2params, 1, actions_chunk);
 	actions = H5Dcreate2(file, "/actions", H5T_NATIVE_FLOAT, a_dspace, H5P_DEFAULT, c2params, H5P_DEFAULT);
 	
+	unsigned long filenum = 0;
+
 	fs::directory_iterator end;
 	for (fs::directory_iterator it(folder); it != end; ++it)
 	{
@@ -69,6 +71,7 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 	
 			write_training_set(ts);
 	
+			++filenum;
 			std::cout << std::endl;
 		}
 		catch (std::exception& e)
@@ -85,6 +88,10 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 	H5Sclose(s_dspace);
 	H5Sclose(a_dspace);
 	H5Fclose(file);
+
+	std::cout << "[Result]" << std::endl 
+			<< "Total files: " << filenum << std::endl
+			<< "Total states: " << s_offset[0] << std::endl;
 }
 
 void Converter::create_training_set(const Board& board, std::vector<TrainingSet>& ts)
