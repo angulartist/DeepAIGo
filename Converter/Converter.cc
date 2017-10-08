@@ -53,8 +53,16 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 
 		auto board = DeepAIGo::SgfParser::LoadFromFile(it->path().generic_string());
 
-		std::vector<TrainingSet> ts;
-		create_training_set(board, ts);
+		try
+		{
+			std::vector<TrainingSet> ts;
+			create_training_set(board, ts);
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << " <Exception> " << e.what() << std::endl;
+			continue;
+		}
 
 		auto state_ndim = states_dim; state_ndim[0] += ts.size();
 		auto action_ndim = actions_dim; action_ndim[0] += ts.size();
