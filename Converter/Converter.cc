@@ -57,25 +57,25 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 		{
 			std::vector<TrainingSet> ts;
 			create_training_set(board, ts);
+
+			auto state_ndim = states_dim; state_ndim[0] += ts.size();
+			auto action_ndim = actions_dim; action_ndim[0] += ts.size();
+	
+			H5Dset_extent(states, state_ndim);
+			H5Dset_extent(actions, action_ndim);
+	
+			s_fspace = H5Dget_space(states);
+			a_fspace = H5Dget_space(actions);
+	
+			write_training_set(ts);
+	
+			std::cout << std::endl;
 		}
 		catch (std::exception& e)
 		{
 			std::cerr << " <Exception> " << e.what() << std::endl;
 			continue;
 		}
-
-		auto state_ndim = states_dim; state_ndim[0] += ts.size();
-		auto action_ndim = actions_dim; action_ndim[0] += ts.size();
-
-		H5Dset_extent(states, state_ndim);
-		H5Dset_extent(actions, action_ndim);
-
-		s_fspace = H5Dget_space(states);
-		a_fspace = H5Dget_space(actions);
-
-		write_training_set(ts);
-
-		std::cout << std::endl;
 	}
 
 	H5Dclose(states);
