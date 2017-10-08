@@ -51,10 +51,10 @@ void Converter::Convert(const std::string& folder, const std::string& filename)
 	{
 		std::cout << it->path().filename().generic_string();
 
-		auto board = DeepAIGo::SgfParser::LoadFromFile(it->path().generic_string());
-
 		try
 		{
+			auto board = DeepAIGo::SgfParser::LoadFromFile(it->path().generic_string());
+
 			std::vector<TrainingSet> ts;
 			create_training_set(board, ts);
 
