@@ -3,6 +3,9 @@ project(DEEPAIGO)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 find_package(HDF5 REQUIRED)
 find_package(Boost 1.64 COMPONENTS program_options filesystem system REQUIRED)
 
