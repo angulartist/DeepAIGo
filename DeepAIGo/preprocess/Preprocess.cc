@@ -53,7 +53,7 @@ namespace DeepAIGo
 				int idx = std::max((int)board.GetHistory().size() - (i + 1), 0);
 				auto& history = board.GetHistory()[idx];
 
-				if (history != Pass || history != Resign)
+				if (board.IsOnBoard(history))
 					ret[i][history.Y][history.X] = 1;
 			}
 
