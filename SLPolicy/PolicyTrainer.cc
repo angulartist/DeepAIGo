@@ -19,7 +19,7 @@ PolicyTrainer::~PolicyTrainer()
 {
 }
 
-void PolicyTrainer::Train(float lr)
+void PolicyTrainer::Train(float lr, const std::string& output)
 {
 	mxcpp::Optimizer* opt = mxcpp::OptimizerRegistry::Find("ccsgd");
 	opt->SetParam("lr", lr)
@@ -82,10 +82,10 @@ void PolicyTrainer::Train(float lr)
 				<< "\tAccuracy: " << test_acc.Get() << std::endl
 				<< "\tLoss: " << test_loss.Get() << std::endl;
 
+		SaveCheckpoint(output + std::to_string(e) + ".params", net_, exec_);
+
 		std::cout << std::endl;
 	}
-
-	SaveCheckpoint("test.params", net_, exec_);
 }
 
 void PolicyTrainer::InitNetwork()

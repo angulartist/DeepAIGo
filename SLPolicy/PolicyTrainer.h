@@ -11,7 +11,7 @@ public:
 	PolicyTrainer(const std::string& train, const std::string& test, int batch_size, int epoch);
 	virtual ~PolicyTrainer();
 
-	void Train(float lr);
+	void Train(float lr, const std::string& output);
 
 	virtual void InitNetwork();
 
