@@ -19,23 +19,30 @@ PolicyTrainer::~PolicyTrainer()
 {
 }
 
-void PolicyTrainer::Train()
+void PolicyTrainer::Train(float lr)
 {
 	mxcpp::Optimizer* opt = mxcpp::OptimizerRegistry::Find("ccsgd");
-	opt->SetParam("lr", 0.003)
+	opt->SetParam("lr", lr)
 		->SetParam("wd", 0.0001)
 		->SetParam("momentum", 0.9);
 
+	mxcpp::Accuracy train_acc, test_acc;
+	mxcpp::LogLoss train_loss, test_loss;
 	for (int e = 0; e < epoch_; ++e)
 	{
+		train_acc.Reset();
+		train_loss.Reset();
+		std::cout << "Epoch " << std::to_string(e + 1) << " ";
 		train_->BeforeFirst();
+		test_->BeforeFirst();
 
 		auto begin = std::chrono::system_clock::now();
 
 		while (train_->Next())
 		{
 			train_->GetData().CopyTo(&exec_->arg_dict()["data"]);
-			train_->GetLabel().CopyTo(&exec_->arg_dict()["softmax_label"]);
+			auto label = train_->GetLabel();
+			label.CopyTo(&exec_->arg_dict()["softmax_label"]);
 			mxcpp::NDArray::WaitAll();
 
 			exec_->Forward(true);
@@ -45,12 +52,37 @@ void PolicyTrainer::Train()
 				opt->Update(i, exec_->arg_arrays[i], exec_->grad_arrays[i]);
 
 			mxcpp::NDArray::WaitAll();
+			train_acc.Update(label, exec_->outputs[0]);
+			train_loss.Update(label, exec_->outputs[0]);
 		}
 
 		auto end = std::chrono::system_clock::now();
 
-		std::cout << "Epoch[" << e << "] Time Cost: " <<
+		std::cout << "Time Cost: " <<
 			std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << " seconds" << std::endl;
+		std::cout << "[Train]" << std::endl
+				<< "\tAccuracy: " << train_acc.Get() << std::endl
+				<< "\tLoss: " << train_loss.Get() << std::endl;
+
+		test_acc.Reset();
+		test_loss.Reset();
+		while (test_->Next())
+		{
+			test_->GetData().CopyTo(&exec_->arg_dict()["data"]);
+			auto label = test_->GetLabel();
+			label.CopyTo(&exec_->arg_dict()["softmax_label"]);
+			exec_->Forward(false);
+			mxcpp::NDArray::WaitAll();
+			
+			test_acc.Update(label, exec_->outputs[0]);
+			test_loss.Update(label, exec_->outputs[0]);
+		}
+
+		std::cout << "[Test]" << std::endl
+				<< "\tAccuracy: " << test_acc.Get() << std::endl
+				<< "\tLoss: " << test_loss.Get() << std::endl;
+
+		std::cout << std::endl;
 	}
 
 	SaveCheckpoint("test.params", net_, exec_);

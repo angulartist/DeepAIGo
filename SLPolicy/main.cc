@@ -14,6 +14,7 @@ int main(int argc, char** argv)
 		("test", bpo::value<std::string>(), "test dataset")
 		("batch_size", bpo::value<int>(), "mini batch size")
 		("epoch", bpo::value<int>(), "training epoch")
+		("lr", bpo::value<float>(), "learning rate")
 		;
 
 	bpo::variables_map vm;
@@ -26,9 +27,10 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		PolicyTrainer trainer(vm["train"].as<std::string>(), vm["test"].as<std::string>(), 128, 10);
+		PolicyTrainer trainer(vm["train"].as<std::string>(), vm["test"].as<std::string>(), 
+							vm["batch_size"].as<int>(), vm["epoch"].as<int>());
 
-		trainer.Train();
+		trainer.Train(vm["lr"].as<float>());
 	}
 
 	return 0;
