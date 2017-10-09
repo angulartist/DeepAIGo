@@ -90,9 +90,9 @@ void PolicyTrainer::Train(float lr)
 
 void PolicyTrainer::InitNetwork()
 {
-	args_["data"] = mxcpp::NDArray(mxcpp::Shape(batch_size_, process_.GetOutputDim(), 19, 19), mxcpp::Context::cpu());
-	args_["softmax_label"] = mxcpp::NDArray(mxcpp::Shape(batch_size_), mxcpp::Context::cpu());
-	net_.InferArgsMap(mxcpp::Context::cpu(), &args_, args_);
+	args_["data"] = mxcpp::NDArray(mxcpp::Shape(batch_size_, process_.GetOutputDim(), 19, 19), mxcpp::Context::gpu());
+	args_["softmax_label"] = mxcpp::NDArray(mxcpp::Shape(batch_size_), mxcpp::Context::gpu());
+	net_.InferArgsMap(mxcpp::Context::gpu(), &args_, args_);
 
-	exec_ = net_.SimpleBind(mxcpp::Context::cpu(), args_);
+	exec_ = net_.SimpleBind(mxcpp::Context::gpu(), args_);
 }
