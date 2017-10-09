@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <stdio.h>
 
 using namespace DeepAIGo;
 namespace mxcpp = mxnet::cpp;
@@ -26,13 +27,19 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 		->SetParam("wd", 0.0001)
 		->SetParam("momentum", 0.9);
 
+	mxcpp::Xavier xavier = mxcpp::Xavier(mxcpp::Xavier::uniform, mxcpp::Xavier::avg, 1);
+	for (auto& arg : exec_->arg_dict())
+	{
+		xavier(arg.first, &arg.second);
+	}
+
 	mxcpp::Accuracy train_acc, test_acc;
 	mxcpp::LogLoss train_loss, test_loss;
 	for (int e = 0; e < epoch_; ++e)
 	{
+		printf("Epoch %d ", e + 1);
 		train_acc.Reset();
 		train_loss.Reset();
-		std::cout << "Epoch " << std::to_string(e + 1) << " ";
 		train_->BeforeFirst();
 		test_->BeforeFirst();
 
@@ -90,9 +97,9 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 
 void PolicyTrainer::InitNetwork()
 {
-	args_["data"] = mxcpp::NDArray(mxcpp::Shape(batch_size_, process_.GetOutputDim(), 19, 19), mxcpp::Context::gpu());
-	args_["softmax_label"] = mxcpp::NDArray(mxcpp::Shape(batch_size_), mxcpp::Context::gpu());
-	net_.InferArgsMap(mxcpp::Context::gpu(), &args_, args_);
+	args_["data"] = mxcpp::NDArray(mxcpp::Shape(batch_size_, process_.GetOutputDim(), 19, 19), mxcpp::Context::cpu());
+	args_["softmax_label"] = mxcpp::NDArray(mxcpp::Shape(batch_size_), mxcpp::Context::cpu());
+	net_.InferArgsMap(mxcpp::Context::cpu(), &args_, args_);
 
-	exec_ = net_.SimpleBind(mxcpp::Context::gpu(), args_);
+	exec_ = net_.SimpleBind(mxcpp::Context::cpu(), args_);
 }
