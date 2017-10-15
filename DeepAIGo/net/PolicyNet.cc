@@ -30,7 +30,7 @@ namespace DeepAIGo
 			1, Shape(1, 1), Shape(1, 1), Shape(0, 0)));
 
 		auto flatten = Flatten(layers.back());
-		net_ = SoftmaxOutput(flatten, data_label);
+		net_ = SoftmaxOutput("softmax", flatten, data_label);
 	}
 
 	PolicyNet::~PolicyNet()

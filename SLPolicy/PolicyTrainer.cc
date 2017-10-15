@@ -24,8 +24,10 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 {
 	mxcpp::Optimizer* opt = mxcpp::OptimizerRegistry::Find("ccsgd");
 	opt->SetParam("lr", lr)
-		->SetParam("wd", 0.0001)
-		->SetParam("momentum", 0.9);
+		->SetParam("wd", 1e-4)
+		->SetParam("momentum", 0.9)
+		->SetParam("rescale_grad", 1.0 / batch_size_)
+		->SetParam("clip_gradient", 10);
 
 	mxcpp::Xavier xavier = mxcpp::Xavier(mxcpp::Xavier::uniform, mxcpp::Xavier::avg, 1);
 	for (auto& arg : exec_->arg_dict())
@@ -33,18 +35,18 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 		xavier(arg.first, &arg.second);
 	}
 
-	mxcpp::Accuracy train_acc, test_acc;
-	mxcpp::LogLoss train_loss, test_loss;
+	auto arg_names = net_.ListArguments();
+
 	for (int e = 0; e < epoch_; ++e)
 	{
-		printf("Epoch %d ", e + 1);
-		train_acc.Reset();
-		train_loss.Reset();
 		train_->BeforeFirst();
 		test_->BeforeFirst();
 
 		auto begin = std::chrono::system_clock::now();
+		printf("<Epoch %d> ", e + 1);
 
+		mxcpp::Accuracy train_acc;
+		mxcpp::LogLoss train_loss;
 		while (train_->Next())
 		{
 			train_->GetData().CopyTo(&exec_->arg_dict()["data"]);
@@ -56,7 +58,8 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 			exec_->Backward();
 
 			for (size_t i = 0; i < exec_->arg_arrays.size(); ++i)
-				opt->Update(i, exec_->arg_arrays[i], exec_->grad_arrays[i]);
+				if (arg_names[i] != "data" && arg_names[i] != "softmax_label")
+					opt->Update(i, exec_->arg_arrays[i], exec_->grad_arrays[i]);
 
 			mxcpp::NDArray::WaitAll();
 			train_acc.Update(label, exec_->outputs[0]);
@@ -71,16 +74,18 @@ void PolicyTrainer::Train(float lr, const std::string& output)
 				<< "\tAccuracy: " << train_acc.Get() << std::endl
 				<< "\tLoss: " << train_loss.Get() << std::endl;
 
-		test_acc.Reset();
-		test_loss.Reset();
+		mxcpp::Accuracy test_acc;
+		mxcpp::LogLoss test_loss;
 		while (test_->Next())
 		{
 			test_->GetData().CopyTo(&exec_->arg_dict()["data"]);
 			auto label = test_->GetLabel();
 			label.CopyTo(&exec_->arg_dict()["softmax_label"]);
+
+			mxcpp::NDArray::WaitAll();
 			exec_->Forward(false);
 			mxcpp::NDArray::WaitAll();
-			
+
 			test_acc.Update(label, exec_->outputs[0]);
 			test_loss.Update(label, exec_->outputs[0]);
 		}
