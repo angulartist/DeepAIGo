@@ -83,14 +83,14 @@ namespace DeepAIGo
 
 	Point GtpEngine::parse_coord(const std::string& arg)
 	{
-		static const std::string coord = "abcdefghijkmnopqrstuvwxyz";
+		static const std::string coord = "abcdefghjklmnopqrstuvwxyz";
 
 		return Point(coord.find_first_of(arg[0]), atoi(arg.substr(1).c_str()) - 1);
 	}
 
 	std::string GtpEngine::coord_to_str(const Point& pt)
 	{
-		static const std::string coord = "ABCDEFGHIJKMNOPQRSTUVWXYZ";
+		static const std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
 		std::stringstream ss;
 		ss << (char)coord[pt.X];
