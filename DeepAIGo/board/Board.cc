@@ -8,9 +8,16 @@ namespace DeepAIGo
 	Board::Board()
 	{
 		board_.resize(BOARD_SIZE2);
-		std::fill(board_.begin(), board_.end(), StoneType::EMPTY);
-
+		liberty_count_.resize(BOARD_SIZE2);
 		liberties_.resize(BOARD_SIZE2);
+
+		Clear();
+	}
+
+	void Board::Clear()
+	{
+		std::fill(board_.begin(), board_.end(), StoneType::EMPTY);
+		
 		for (int x = 0; x < BOARD_SIZE; ++x)
 		{
 			for (int y = 0; y < BOARD_SIZE; ++y)
@@ -20,7 +27,6 @@ namespace DeepAIGo
 			}
 		}
 
-		liberty_count_.resize(BOARD_SIZE2);
 		std::fill(liberty_count_.begin(), liberty_count_.end(), -1);
 
 		groups_.resize(BOARD_SIZE2);
@@ -28,6 +34,7 @@ namespace DeepAIGo
 		current_player_ = StoneType::BLACK;
 		ko_ = Pass;
 		is_ended_ = false;
+		history_.clear();
 
 		black_captured_ = 0;
 		white_captured_ = 0;

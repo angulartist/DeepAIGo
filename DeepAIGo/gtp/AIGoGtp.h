@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../board/Board.h"
+#include "../net/PolicyNet.h"
 #include "GtpEngine.h"
 
 namespace DeepAIGo
@@ -14,5 +15,7 @@ namespace DeepAIGo
 
 	private:
 		Board board_;
+
+		PolicyNet net_;
 	};
 }

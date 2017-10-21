@@ -15,6 +15,7 @@ namespace DeepAIGo
 		NAME,
 		VERSION,
 		CLEAR_BOARD,
+		SHOW_BOARD,
 		PLAY,
 		GENMOVE,
 		UNKNOWN
@@ -42,6 +43,8 @@ namespace DeepAIGo
 
 	protected:
 		StoneType parse_color(const std::string& arg);
+		Point parse_coord(const std::string& arg);
+		std::string coord_to_str(const Point& pt);
 		GtpCmd parse_command(const std::vector<std::string>& tokens);
 
 	private:

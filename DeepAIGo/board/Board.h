@@ -10,6 +10,8 @@ namespace DeepAIGo
 		Board();
 		virtual ~Board() = default;
 
+		void Clear();
+
 		bool IsValidMove(const Point& pt) const;
 		bool IsBoundary(const Point& pt) const;
 		bool IsOnBoard(const Point& pt) const;

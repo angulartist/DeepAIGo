@@ -1,6 +1,7 @@
 #include "GtpEngine.h"
 
 #include <boost/algorithm/string.hpp>
+#include <sstream>
 #include <map>
 
 namespace DeepAIGo
@@ -13,6 +14,7 @@ namespace DeepAIGo
 			{ "name", GtpCmdType::NAME },
 			{ "version", GtpCmdType::VERSION },
 			{ "clear_board", GtpCmdType::CLEAR_BOARD },
+			{ "showboard", GtpCmdType::SHOW_BOARD },
 			{ "play", GtpCmdType::PLAY },
 			{ "genmove", GtpCmdType::GENMOVE },
 		};
@@ -77,6 +79,24 @@ namespace DeepAIGo
 			return StoneType::BLACK;
 		else
 			return StoneType::WHITE;
+	}
+
+	Point GtpEngine::parse_coord(const std::string& arg)
+	{
+		static const std::string coord = "abcdefghijkmnopqrstuvwxyz";
+
+		return Point(coord.find_first_of(arg[0]), atoi(arg.substr(1).c_str()) - 1);
+	}
+
+	std::string GtpEngine::coord_to_str(const Point& pt)
+	{
+		static const std::string coord = "ABCDEFGHIJKMNOPQRSTUVWXYZ";
+
+		std::stringstream ss;
+		ss << (char)coord[pt.X];
+		ss << pt.Y + 1;
+		
+		return ss.str();
 	}
 
 	GtpCmd GtpEngine::parse_command(const std::vector<std::string>& tokens)
