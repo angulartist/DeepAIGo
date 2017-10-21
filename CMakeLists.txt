@@ -20,7 +20,6 @@ link_directories($ENV{MXNET_HOME}/lib)
 add_subdirectory(DeepAIGo)
 add_subdirectory(AIGo_Gtp)
 add_subdirectory(Converter)
-add_subdirectory(SLPolicy)
 
 add_subdirectory(Test_Board)
 add_subdirectory(Test_Preprocess)
