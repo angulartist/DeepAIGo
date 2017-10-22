@@ -85,6 +85,7 @@ namespace DeepAIGo
 	{
 		static const std::string coord = "abcdefghjklmnopqrstuvwxyz";
 
+		if (arg == "pass") return Pass;
 		return Point(coord.find_first_of(arg[0]), atoi(arg.substr(1).c_str()) - 1);
 	}
 
@@ -93,8 +94,12 @@ namespace DeepAIGo
 		static const std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
 		std::stringstream ss;
-		ss << (char)coord[pt.X];
-		ss << pt.Y + 1;
+		if (pt == Pass) ss << "pass";
+		else
+		{
+			ss << (char)coord[pt.X];
+			ss << pt.Y + 1;
+		}
 		
 		return ss.str();
 	}

@@ -10,6 +10,7 @@ namespace DeepAIGo
 		board_.resize(BOARD_SIZE2);
 		liberty_count_.resize(BOARD_SIZE2);
 		liberties_.resize(BOARD_SIZE2);
+		groups_.resize(BOARD_SIZE2);
 
 		Clear();
 	}
@@ -23,13 +24,13 @@ namespace DeepAIGo
 			for (int y = 0; y < BOARD_SIZE; ++y)
 			{
 				auto lib = GetNeighbor(Point(x, y));
+				liberties_[POS(Point(x, y))].clear();
 				liberties_[POS(Point(x, y))].insert(lib.begin(), lib.end());
+				groups_[POS(Point(x, y))].clear();
 			}
 		}
 
 		std::fill(liberty_count_.begin(), liberty_count_.end(), -1);
-
-		groups_.resize(BOARD_SIZE2);
 		
 		current_player_ = StoneType::BLACK;
 		ko_ = Pass;
