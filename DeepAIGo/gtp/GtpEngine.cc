@@ -33,11 +33,10 @@ namespace DeepAIGo
 	void GtpEngine::Run(std::istream& stream, std::ostream& outstream)
 	{
 		is_run_ = true;
+		std::string lower;
 
-		while (is_run_)
+		while (is_run_ && std::getline(stream, lower))
 		{
-			std::string lower;
-			std::getline(stream, lower);
 			boost::to_lower(lower);
 
 			std::vector<std::string> tokens;

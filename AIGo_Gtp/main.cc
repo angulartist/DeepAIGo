@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
 		if (vm.count("help"))
 		{
-			std::cout << "[Usage]: DeepAIGo [params]" << std::endl
+			std::cout << "[Usage]: AIGoGtp [params]" << std::endl
 				<< desc;
 
 			return 0;
