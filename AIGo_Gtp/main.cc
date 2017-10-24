@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			PolicyNet net;
+			PolicyNet net(8);
 			net.InitNetwork();
 
 			Board board;

@@ -44,8 +44,7 @@ namespace DeepAIGo
 		void DoMove(const Point& pt);
 
 		void ShowBoard() const;
-		void ShowGroups() const;
-		void ShowLiberties() const;
+		std::string ToString() const;
 
 	private:
 		void update_neighbor(const Point& pt);

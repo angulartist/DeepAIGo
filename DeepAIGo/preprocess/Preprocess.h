@@ -3,14 +3,13 @@
 #include "../board/Board.h"
 
 #include <algorithm>
-#include <boost/multi_array.hpp>
 #include <functional>
 #include <vector>
 
+#include "Symmetrics.h"
+
 namespace DeepAIGo
 {
-	using Tensor = boost::multi_array<float, 3>;
-
 	enum class ProcessorType
 	{
 		STONE_COLOR,

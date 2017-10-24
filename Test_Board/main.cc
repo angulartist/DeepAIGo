@@ -16,9 +16,6 @@ int main()
 
 	board.ShowBoard();
 
-	board.ShowLiberties();
-	board.ShowGroups();
-
 	Point last = board.GetHistory().back();
 	const std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 

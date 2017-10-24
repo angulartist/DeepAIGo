@@ -1,7 +1,9 @@
 #include "Board.h"
 
 #include <algorithm>
-#include <stdio.h>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 
 namespace DeepAIGo
 {
@@ -288,79 +290,37 @@ namespace DeepAIGo
 
 	void Board::ShowBoard() const
 	{
-		printf("   ");
+		std::cout << this->ToString();
+	}
 
-		std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
+	std::string Board::ToString() const
+	{
+		std::stringstream ss;
 
+		ss << "   ";
 		for (int i = 0; i < BOARD_SIZE; ++i)
-			printf("%c", coord[i]);
+			ss << (char)('A' + i);
 
-		printf("\n");
+		ss << std::endl;
 
 		for (int y = BOARD_SIZE - 1; y >= 0; --y)
 		{
-			printf("%02d ", (int)y + 1);
+			ss << std::setw(2) << std::setfill('0') << y;
 
-			for (size_t x = 0; x < BOARD_SIZE; ++x)
+			for (int x = 0; x < BOARD_SIZE; ++x)
 			{
 				if (GetStoneColor(Point(x, y)) == StoneType::EMPTY)
-					printf("·");
+					ss << "·";
 				else if (GetStoneColor(Point(x, y)) == StoneType::BLACK)
-					printf("B");
+					ss << "B";
 				else
-					printf("W");
+					ss << "W";
 			}
 
-			printf("\n");
+			ss << std::endl;
 		}
-	}
 
-	void Board::ShowLiberties() const
-	{
-		printf("   ");
-
-		std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
-
-		for (size_t i = 0; i < BOARD_SIZE; ++i)
-			printf("%c ", coord[i]);
-
-		printf("\n");
-
-		for (int y = BOARD_SIZE - 1; y >= 0; --y)
-		{
-			printf("%02d", (int)y + 1);
-
-			for (size_t x = 0; x < BOARD_SIZE; ++x)
-			{
-				printf("%02d", liberty_count_[POS(Point(x, y))]);
-			}
-
-			printf("\n");
-		}
-	}
-
-	void Board::ShowGroups() const
-	{
-		printf("   ");
-
-		std::string coord = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
-
-		for (size_t i = 0; i < BOARD_SIZE; ++i)
-			printf("%c ", coord[i]);
-
-		printf("\n");
-
-		for (int y = BOARD_SIZE - 1; y >= 0; --y)
-		{
-			printf("%02d", (int)y + 1);
-
-			for (size_t x = 0; x < BOARD_SIZE; ++x)
-			{
-				printf("%02d", groups_[POS(Point(x, y))].size());
-			}
-
-			printf("\n");
-		}
+		return ss.str();
 	}
 
 	void Board::update_neighbor(const Point& pt)

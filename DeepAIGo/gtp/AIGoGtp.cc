@@ -3,7 +3,7 @@
 namespace DeepAIGo
 {
 	AIGoGtp::AIGoGtp()
-		: GtpEngine("DeepAIGo", "3"), board_()
+		: GtpEngine("DeepAIGo", "3"), board_(), net_(8)
 	{
 		net_.InitNetwork();
 	}
@@ -33,7 +33,7 @@ namespace DeepAIGo
 		}
 		else if (command.command == GtpCmdType::SHOW_BOARD)
 		{
-			board_.ShowBoard();
+			return board_.ToString();
 		}
 
 		return "";
