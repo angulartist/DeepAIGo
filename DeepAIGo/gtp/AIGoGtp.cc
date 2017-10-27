@@ -1,9 +1,12 @@
 #include "AIGoGtp.h"
 
+#include <random>
+#include <ctime>
+
 namespace DeepAIGo
 {
 	AIGoGtp::AIGoGtp()
-		: GtpEngine("DeepAIGo", "3"), board_(), net_(8)
+		: GtpEngine("DeepAIGo", "3"), board_(), net_()
 	{
 		net_.InitNetwork();
 	}
@@ -12,7 +15,10 @@ namespace DeepAIGo
 	{
 		if (command.command == GtpCmdType::GENMOVE)
 		{
-			auto output = net_.EvalState(board_);
+			std::uniform_int_distribution<int> dist(0, 7);
+			std::mt19937 engine((unsigned int)time(NULL));
+
+			auto output = net_.EvalState(board_, dist(engine));
 			auto maxe = std::max_element(output.begin(), output.end(), [](const ActionProb& lhs, const ActionProb& rhs) {
 				return std::get<1>(lhs) < std::get<1>(rhs);
 			});

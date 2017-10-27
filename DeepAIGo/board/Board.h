@@ -19,6 +19,7 @@ namespace DeepAIGo
 
 		bool IsEyeShape(const Point& pt, StoneType owner) const;
 		bool IsTrueEye(const Point& pt, StoneType owner) const;
+		StoneType GetEyeColor(const Point& pt) const;
 
 		bool IsEnded() const;
 		StoneType GetStoneColor(const Point& pt) const;
@@ -43,12 +44,16 @@ namespace DeepAIGo
 		void DoMove(const Point& pt, StoneType color, bool history = true);
 		void DoMove(const Point& pt);
 
+		float GetTrompTaylorScore() const;
+
 		void ShowBoard() const;
+		void ShowTerritory() const;
 		std::string ToString() const;
 
 	private:
 		void update_neighbor(const Point& pt);
 		void remove_group(PointSet group);
+		bool territory_floodfill(std::vector<int>& territory) const;
 
 	private:
 		StoneType current_player_;

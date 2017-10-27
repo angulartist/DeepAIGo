@@ -2,8 +2,8 @@
 
 namespace DeepAIGo
 {
-    class Pattern
+    class TreeNode
     {
-
+        
     };
 }

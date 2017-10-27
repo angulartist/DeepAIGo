@@ -12,20 +12,18 @@ namespace DeepAIGo
 	class PolicyNet
 	{
 	public:
-		PolicyNet(int symmetrics = 1);
+		PolicyNet();
 		virtual ~PolicyNet();
 
-		std::vector<ActionProb> EvalState(const Board& board);
+		std::vector<ActionProb> EvalState(const Board& board, int symmetric = 0);
 
 		virtual void InitNetwork();
 
 	private:
-		boost::multi_array<mx_float, 4> make_input(const Board& board);
-		boost::multi_array<mx_float, 2> average_output(const Tensor& output);
+		boost::multi_array<mx_float, 4> make_input(const Board& board, int symmetric);
+		boost::multi_array<mx_float, 2> convert_output(const Tensor& output, int symmetric);
 
 	protected:
-		int symmetrics_;
-
 		mxnet::cpp::Symbol net_;
 		Preprocess process_;
 

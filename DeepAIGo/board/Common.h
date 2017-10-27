@@ -68,6 +68,11 @@ namespace DeepAIGo
 		return (pt.X + pt.Y * BOARD_SIZE);
 	}
 
+	inline Point IDX2PT(int idx)
+	{
+		return Point(idx % BOARD_SIZE, idx / BOARD_SIZE);
+	}
+
 	inline Point operator""_pt(const char* str, size_t len)
 	{
 		if (len > 3 || len < 2)

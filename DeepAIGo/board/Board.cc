@@ -117,6 +117,13 @@ namespace DeepAIGo
 			!((num_boundary > 0 && num_opponent > 0) || (num_boundary == 0 && num_opponent > 1));
 	}
 
+	StoneType Board::GetEyeColor(const Point& pt) const
+	{
+		if (IsTrueEye(pt, StoneType::BLACK)) return StoneType::BLACK;
+		else if (IsTrueEye(pt, StoneType::WHITE)) return StoneType::WHITE;
+		else return StoneType::EMPTY;
+	}
+
 	bool Board::IsEnded() const
 	{
 		return is_ended_;
@@ -288,9 +295,70 @@ namespace DeepAIGo
 		DoMove(pt, current_player_);
 	}
 
+	float Board::GetTrompTaylorScore() const
+	{
+		std::vector<int> territory;
+		territory.resize(BOARD_SIZE2);
+
+		for (size_t i = 0; i < BOARD_SIZE2; ++i)
+			territory[i] = (int)board_[i];
+
+		while (territory_floodfill(territory));
+
+		float black_score = 0.f;
+		float white_score = KOMI;
+
+		for (size_t i = 0; i < BOARD_SIZE2; ++i)
+		{
+			if (territory[i] == 1) ++black_score;
+			else if (territory[i] == 2) ++white_score;
+		}
+
+		return black_score - white_score;
+	}
+
 	void Board::ShowBoard() const
 	{
 		std::cout << this->ToString();
+	}
+
+	void Board::ShowTerritory() const
+	{
+		std::vector<int> territory;
+		territory.resize(BOARD_SIZE2);
+
+		for (size_t i = 0; i < BOARD_SIZE2; ++i)
+			territory[i] = (int)board_[i];
+
+		while (territory_floodfill(territory));
+
+		std::cout << "   ";
+		for (int i = 0; i < BOARD_SIZE; ++i)
+			std::cout  << (char)('A' + i);
+
+		std::cout  << std::endl;
+
+		for (int y = BOARD_SIZE - 1; y >= 0; --y)
+		{
+			std::cout  << std::setw(2) << std::setfill('0') << y;
+
+			for (int x = 0; x < BOARD_SIZE; ++x)
+			{
+				if (GetStoneColor(Point(x, y)) == StoneType::EMPTY)
+					if (territory[POS(Point(x, y))] == 1)
+						std::cout  << "B";
+					else if (territory[POS(Point(x, y))] == 2)
+						std::cout  << "W";
+					else
+						std::cout << "·";
+				else if (GetStoneColor(Point(x, y)) == StoneType::BLACK)
+				std::cout  << "B";
+				else
+				std::cout  << "W";
+			}
+
+			std::cout  << std::endl;
+		}
 	}
 
 	std::string Board::ToString() const
@@ -388,5 +456,56 @@ namespace DeepAIGo
 				}
 			}
 		}
+	}
+
+	bool Board::territory_floodfill(std::vector<int>& territory) const
+	{
+		bool ret = false;
+
+		for (size_t i = 0; i < BOARD_SIZE2; ++i)
+		{
+			if (board_[i] == StoneType::EMPTY)
+			{
+				if (territory[i] == 3) continue; // if DAME
+
+				int neighbors[4] = {0};
+
+				for (auto& n : GetNeighbor(IDX2PT(i)))
+					++neighbors[territory[POS(n)]];
+
+				if ((neighbors[1] && neighbors[2]) || neighbors[3])
+				{
+					territory[i] = 3;
+
+					for (auto& n : GetNeighbor(IDX2PT(i)))
+						if (territory[POS(n)] == 0)
+							territory[POS(n)] = 3;
+
+					ret = true;
+				}
+				else if (territory[i] == 0 && neighbors[1])
+				{
+					territory[i] = 1;
+
+					for (auto& n : GetNeighbor(IDX2PT(i)))
+						if (territory[POS(n)] == 0)
+							territory[POS(n)] = 1;
+
+					ret = true;
+				}
+				else if (territory[i] == 0 && neighbors[2])
+				{
+					territory[i] = 2;
+
+					for (auto& n : GetNeighbor(IDX2PT(i)))
+						if (territory[POS(n)] == 0)
+							territory[POS(n)] = 2;
+
+					ret = true;
+				}
+			}
+		}
+
+		return ret;
 	}
 }
