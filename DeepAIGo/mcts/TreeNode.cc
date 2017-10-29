@@ -39,7 +39,7 @@ namespace DeepAIGo
     void TreeNode::Expand(const Board& board, PolicyNet::Ptr policy)
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        if (is_expanded_.load()) return;
+        if (is_expanded_) return;
 
         is_expanded_ = true;
 

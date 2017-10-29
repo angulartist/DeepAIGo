@@ -1,7 +1,5 @@
 #include <gtp/AIGoGtp.h>
 
-#include <net/PolicyNet.h>
-
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -37,23 +35,16 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			PolicyNet net;
-			net.InitNetwork();
-
+			MCTSEngine engine;
 			Board board;
 
 			while (!board.IsEnded())
 			{
-				auto output = net.EvalState(board);
-				auto maxe = std::max_element(output.begin(), output.end(), [](const ActionProb& lhs, const ActionProb& rhs) {
-					return std::get<1>(lhs) < std::get<1>(rhs);
-				});
-
-				board.DoMove(std::get<0>(maxe[0]));
+				auto pt = engine.GenMove(board);
+				board.DoMove(pt);
+				engine.DoMove(pt);
 				board.ShowBoard();
 				std::cout << std::endl;
-
-				std::cin.get();
 			}
 		}
 	}

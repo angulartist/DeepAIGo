@@ -47,14 +47,12 @@ namespace DeepAIGo
 
 		args_["data"].SyncCopyFromCPU(input.data(), input.num_elements());
 
-		NDArray::WaitAll();
-
 		exec_->Forward(false);
+		NDArray::WaitAll();
 		
 		Tensor outputs { boost::extents[1][1][BOARD_SIZE * BOARD_SIZE] };
 
 		exec_->outputs[0].SyncCopyToCPU(outputs.data(), BOARD_SIZE2);
-		NDArray::WaitAll();
 
 		boost::array<Tensor::index, 3> dims = { { 1, BOARD_SIZE, BOARD_SIZE } };
 		outputs.reshape(dims);

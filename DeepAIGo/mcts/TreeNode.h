@@ -48,7 +48,7 @@ namespace DeepAIGo
         std::atomic<int> W_;
         std::atomic<int> N_;
 
-        std::atomic<bool> is_expanded_;
+        bool is_expanded_;
         std::mutex mutex_;
     };
 }

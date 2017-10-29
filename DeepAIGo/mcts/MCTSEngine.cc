@@ -21,9 +21,8 @@ namespace DeepAIGo
 
         const int thread = 4;
 
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < 25; ++i)
         {
-            std::cout << i << std::endl;
             std::vector<std::thread> threads(thread);
 
             for (int j = 0; j < thread; ++j)
