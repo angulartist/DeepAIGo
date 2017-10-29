@@ -2,6 +2,7 @@
 
 #include "../board/Board.h"
 #include "../net/PolicyNet.h"
+#include "../mcts/MCTSEngine.h"
 #include "GtpEngine.h"
 
 namespace DeepAIGo
@@ -16,6 +17,6 @@ namespace DeepAIGo
 	private:
 		Board board_;
 
-		PolicyNet net_;
+		MCTSEngine engine_;
 	};
 }

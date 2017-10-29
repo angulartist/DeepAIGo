@@ -6,25 +6,18 @@
 namespace DeepAIGo
 {
 	AIGoGtp::AIGoGtp()
-		: GtpEngine("DeepAIGo", "3"), board_(), net_()
+		: GtpEngine("DeepAIGo", "3"), board_()
 	{
-		net_.InitNetwork();
 	}
 
 	std::string AIGoGtp::Process(const GtpCmd& command)
 	{
 		if (command.command == GtpCmdType::GENMOVE)
 		{
-			std::uniform_int_distribution<int> dist(0, 7);
-			std::mt19937 engine((unsigned int)time(NULL));
+			auto pt = engine_.GenMove(board_);
+			board_.DoMove(pt);
 
-			auto output = net_.EvalState(board_, dist(engine));
-			auto maxe = std::max_element(output.begin(), output.end(), [](const ActionProb& lhs, const ActionProb& rhs) {
-				return std::get<1>(lhs) < std::get<1>(rhs);
-			});
-
-			board_.DoMove(std::get<0>(maxe[0]));
-			return coord_to_str(std::get<0>(maxe[0]));
+			return coord_to_str(pt);
 		}
 		else if (command.command == GtpCmdType::PLAY)
 		{
@@ -32,6 +25,7 @@ namespace DeepAIGo
 			auto coord = parse_coord(command.args[1]);
 
 			board_.DoMove(coord, color);
+			engine_.DoMove(coord);
 		}
 		else if (command.command == GtpCmdType::CLEAR_BOARD)
 		{

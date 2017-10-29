@@ -43,6 +43,26 @@ namespace DeepAIGo
 		white_captured_ = 0;
 	}
 
+	Board Board::Copy() const
+	{
+		Board ret;
+		
+		std::copy(board_.begin(), board_.end(), ret.board_.begin());
+		std::copy(liberties_.begin(), liberties_.end(), ret.liberties_.begin());
+		std::copy(groups_.begin(), groups_.end(), ret.groups_.begin());
+		std::copy(liberty_count_.begin(), liberty_count_.end(), ret.liberty_count_.begin());
+
+		ret.current_player_ = current_player_;
+		ret.ko_ = ko_;
+		ret.is_ended_ = is_ended_;
+		ret.history_.assign(history_.begin(), history_.end());
+
+		ret.black_captured_ = black_captured_;
+		ret.white_captured_ = white_captured_;
+
+		return ret;
+	}
+
 	bool Board::IsValidMove(const Point& pt) const
 	{
 		if (pt == Pass || pt == Resign)
@@ -305,8 +325,8 @@ namespace DeepAIGo
 
 		while (territory_floodfill(territory));
 
-		float black_score = 0.f;
-		float white_score = KOMI;
+		float black_score = white_captured_;
+		float white_score = black_captured_ + KOMI;
 
 		for (size_t i = 0; i < BOARD_SIZE2; ++i)
 		{
@@ -319,7 +339,7 @@ namespace DeepAIGo
 
 	void Board::ShowBoard() const
 	{
-		std::cout << this->ToString();
+		std::cout << "  " << this->ToString();
 	}
 
 	void Board::ShowTerritory() const
@@ -332,7 +352,7 @@ namespace DeepAIGo
 
 		while (territory_floodfill(territory));
 
-		std::cout << "   ";
+		std::cout << "  ";
 		for (int i = 0; i < BOARD_SIZE; ++i)
 			std::cout  << (char)('A' + i);
 
@@ -340,7 +360,7 @@ namespace DeepAIGo
 
 		for (int y = BOARD_SIZE - 1; y >= 0; --y)
 		{
-			std::cout  << std::setw(2) << std::setfill('0') << y;
+			std::cout  << std::setw(2) << std::setfill('0') << y << " ";
 
 			for (int x = 0; x < BOARD_SIZE; ++x)
 			{
@@ -365,7 +385,6 @@ namespace DeepAIGo
 	{
 		std::stringstream ss;
 
-		ss << "   ";
 		for (int i = 0; i < BOARD_SIZE; ++i)
 			ss << (char)('A' + i);
 
@@ -373,7 +392,7 @@ namespace DeepAIGo
 
 		for (int y = BOARD_SIZE - 1; y >= 0; --y)
 		{
-			ss << std::setw(2) << std::setfill('0') << y;
+			ss << std::setw(2) << std::setfill('0') << y << " ";
 
 			for (int x = 0; x < BOARD_SIZE; ++x)
 			{

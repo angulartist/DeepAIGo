@@ -70,7 +70,7 @@ namespace DeepAIGo
 
 				if (board.IsValidMove(pt) && !board.IsTrueEye(pt, board.GetCurrentPlayer()))
 				{
-					ret.push_back(std::make_tuple(pt, output[y][x]));
+					ret.emplace_back(std::make_tuple(pt, output[y][x]));
 				}
 			}
 		}

@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 find_package(HDF5 REQUIRED)
 find_package(Boost 1.64 COMPONENTS program_options filesystem system REQUIRED)
+find_package(Threads)
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories($ENV{MXNET_HOME}/include)
@@ -26,3 +27,4 @@ add_subdirectory(Test_Preprocess)
 add_subdirectory(Test_SGFParser)
 add_subdirectory(Test_Symmetrics)
 add_subdirectory(Test_TTScore)
+add_subdirectory(Test_MCTS)

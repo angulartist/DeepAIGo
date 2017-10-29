@@ -4,6 +4,7 @@
 #include "../preprocess/Preprocess.h"
 
 #include <tuple>
+#include <memory>
 
 namespace DeepAIGo
 {
@@ -11,6 +12,9 @@ namespace DeepAIGo
 
 	class PolicyNet
 	{
+	public:
+		using Ptr = std::shared_ptr<PolicyNet>;
+
 	public:
 		PolicyNet();
 		virtual ~PolicyNet();
