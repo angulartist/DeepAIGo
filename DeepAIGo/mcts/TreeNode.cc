@@ -1,8 +1,5 @@
 #include "TreeNode.h"
 
-#include <ctime>
-#include <random>
-
 namespace DeepAIGo
 {
     TreeNode::TreeNode(Point action, float P, TreeNode::Ptr parent)
@@ -36,17 +33,12 @@ namespace DeepAIGo
         return children_[max_idx];
     }
 
-    void TreeNode::Expand(const Board& board, PolicyNet::Ptr policy)
+    void TreeNode::Expand(const std::vector<ActionProb>& probs)
     {
         std::lock_guard<std::mutex> lock(mutex_);
         if (is_expanded_) return;
 
         is_expanded_ = true;
-
-        std::uniform_int_distribution<int> dist(0, 7);
-        std::mt19937 engine((unsigned int)time(NULL));
-
-        auto probs = policy->EvalState(board, dist(engine));
 
         for (auto& p : probs)
         {
@@ -90,17 +82,30 @@ namespace DeepAIGo
         return N_.load();
     }
 
-    void TreeNode::Update(int w)
+    float TreeNode::GetValue() const
     {
-        if (parent_ != nullptr)
-            parent_->Update(w);
+        size_t total_games = 0;
+        for (auto& n : children_)
+            total_games += n->GetVisits();
 
-        update(w);
+        float q = (GetVisits()) ? W_.load() / GetVisits() : 0;
+        float u = TreeNode::puct * P_.load() * std::sqrt(total_games) / (1.f + GetVisits());
+
+        return q + u;
     }
 
-    void TreeNode::update(int w)
+    void TreeNode::Update(int w, bool own)
+    {
+        if (parent_ != nullptr)
+            parent_->Update(w, !own);
+
+        update(w, own);
+    }
+
+    void TreeNode::update(int w, bool own)
     {
         atomic_fetch_add(&N_, 1);
+        atomic_fetch_add(&W_, w * (own ? 1 : -1));
         atomic_fetch_sub(&W_, TreeNode::Vl);
     }
 }

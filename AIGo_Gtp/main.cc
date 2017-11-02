@@ -16,42 +16,34 @@ int main(int argc, char** argv)
 
 	bpo::variables_map vm;
 
-	try
+	bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
+
+	if (vm.count("help"))
 	{
-		bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
+		std::cout << "[Usage]: AIGoGtp [params]" << std::endl
+			<< desc;
 
-		if (vm.count("help"))
-		{
-			std::cout << "[Usage]: AIGoGtp [params]" << std::endl
-				<< desc;
-
-			return 0;
-		}
-		else if (vm.count("gtp"))
-		{
-			AIGoGtp gtp;
-
-			gtp.Run(std::cin, std::cout);
-		}
-		else
-		{
-			MCTSEngine engine;
-			Board board;
-
-			while (!board.IsEnded())
-			{
-				auto pt = engine.GenMove(board);
-				board.DoMove(pt);
-				engine.DoMove(pt);
-				board.ShowBoard();
-				std::cout << std::endl;
-			}
-		}
+		return 0;
 	}
-	catch (std::exception& e)
+	else if (vm.count("gtp"))
 	{
-		std::cerr << "[Error] " << e.what();
-		return -1;
+		AIGoGtp gtp;
+
+		gtp.Run(std::cin, std::cout);
+	}
+	else
+	{
+		MCTSEngine engine;
+		Board board;
+
+		while (!board.IsEnded())
+		{
+			auto pt = engine.GenMove(board);
+			board.DoMove(pt);
+			engine.DoMove(pt);
+			board.ShowBoard();
+			std::cout << std::endl;
+		}
 	}
 
 	return 0;

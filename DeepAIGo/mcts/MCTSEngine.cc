@@ -1,5 +1,7 @@
 #include "MCTSEngine.h"
 
+#include <ctime>
+#include <random>
 #include <thread>
 
 namespace DeepAIGo
@@ -16,27 +18,34 @@ namespace DeepAIGo
     {
         if (!root_->HasChild())
         {
-            root_->Expand(board, policy_);
+            root_->Expand(policy_->EvalState(board, 0));
         }
 
-        const int thread = 4;
+        stop_think_ = false;
 
-        for (int i = 0; i < 25; ++i)
+        std::vector<std::thread> threads(Threads);
+        threads[0] = std::thread(&MCTSEngine::evaluate, this);
+
+        for (int i = 0; i < 10; ++i)
         {
-            std::vector<std::thread> threads(thread);
-
-            for (int j = 0; j < thread; ++j)
+            for (int j = 1; j < Threads; ++j)
             {
                 threads[j] = std::thread(&MCTSEngine::playout, this, std::ref(board));
             }
 
-            for (int j = 0; j < thread; ++j)
+            for (int j = 1; j < Threads; ++j)
             {
                 threads[j].join();
             }
         }
+        stop_think_ = true;
+
+        for (int j = 0; j < Threads; ++j)
+            if (threads[j].joinable())
+                threads[j].join();
 
         root_ = root_->Select();
+
         return root_->GetAction();
     }
 
@@ -67,10 +76,44 @@ namespace DeepAIGo
             cpy.DoMove(node->GetAction());
         }
 
-        float w = ((board.GetCurrentPlayer() == StoneType::BLACK && cpy.GetTrompTaylorScore() > 0) ||
-                    (board.GetCurrentPlayer() == StoneType::WHITE && cpy.GetTrompTaylorScore() < 0)) ? 1 : -1;
+        float w = ((cpy.GetCurrentPlayer() == StoneType::BLACK && cpy.GetTrompTaylorScore() > 0) ||
+                    (cpy.GetCurrentPlayer() == StoneType::WHITE && cpy.GetTrompTaylorScore() < 0)) ? 1 : -1;
 
         node->Update(w);
-        node->Expand(cpy, policy_);
+        enqueue_policy(cpy, node);
+    }
+
+    void MCTSEngine::evaluate()
+    {
+        while(1)
+        {
+            if (policy_que_cnt_ > 0)
+            {
+                std::lock_guard<std::mutex> lock(mutex_);
+
+                for (int i = 0; i < policy_que_.size(); ++i)
+                {
+                    std::uniform_int_distribution<int> dist(0, 7);
+                    std::mt19937 rand((unsigned int)time(NULL));
+
+                    policy_que_[i].node->Expand(policy_->EvalState(
+                        policy_que_[i].board, dist(rand)
+                    ));
+                }
+
+                policy_que_.clear();
+                policy_que_cnt_ = 0;
+            }
+
+            if (stop_think_) break;
+        }
+    }
+
+    void MCTSEngine::enqueue_policy(const Board& board, TreeNode::Ptr node)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        policy_que_.emplace_back(board, node);
+        atomic_fetch_add(&policy_que_cnt_, 1);
     }
 }

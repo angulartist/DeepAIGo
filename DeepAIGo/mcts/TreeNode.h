@@ -22,7 +22,7 @@ namespace DeepAIGo
         TreeNode(Point action = Pass, float P = 1.0f, Ptr parent = nullptr);
 
         TreeNode::Ptr Select();
-        void Expand(const Board& board, PolicyNet::Ptr policy);
+        void Expand(const std::vector<ActionProb>& probs);
 
         const Point& GetAction() const;
         void SetParent(Ptr parent);
@@ -34,10 +34,10 @@ namespace DeepAIGo
     
         int GetVisits() const;
         float GetValue() const;
-        void Update(int w);
+        void Update(int w, bool own = true);
 
     private:
-        void update(int w);
+        void update(int w, bool own);
 
     private:
         Ptr parent_;
