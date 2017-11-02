@@ -110,6 +110,8 @@ void Converter::create_training_set(const Board& board, std::vector<TrainingSet>
 
 		if (act != Pass)
 			ts.push_back(std::make_tuple(state, action));
+		else
+			ts.push_back(std::make_tuple(state, BOARD_SIZE2));
 
 		tmp.DoMove(act);
 	}

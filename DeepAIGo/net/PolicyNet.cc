@@ -15,22 +15,24 @@ namespace DeepAIGo
 		Symbol data_label = Symbol::Variable("softmax_label");
 
 		std::vector<mxnet::cpp::Symbol> layers;
-		layers.push_back(ConvFactory(data, 128, Shape(5, 5), Shape(1, 1), Shape(2, 2), "0"));
+		layers.emplace_back(ConvFactory(data, 128, Shape(5, 5), Shape(1, 1), Shape(2, 2), "0"));
 
 		for (int i = 1; i < 7; i++)
 		{
-			layers.push_back(
+			layers.emplace_back(
 				ConvFactory(layers.back(), 128, Shape(3, 3), Shape(1, 1), Shape(1, 1), std::to_string(i)));
 		}
-
-		Symbol conv_w("convolution7_weight"), conv_b("convolution7_bias");
-
-		layers.push_back(Convolution("convolution7", layers.back(),
-			conv_w, conv_b, Shape(1, 1),
-			1, Shape(1, 1), Shape(1, 1), Shape(0, 0)));
+	
+		layers.emplace_back(
+			ConvFactory(layers.back(), 1, Shape(1, 1), Shape(1, 1), Shape(0, 0), "7"));
 
 		auto flatten = Flatten(layers.back());
-		net_ = SoftmaxOutput("softmax", flatten, data_label);
+
+		auto fc_w = Symbol("fullyconnected0_weight");
+		auto fc_b = Symbol("fullyconnected0_bias");
+		auto fc = FullyConnected(flatten, fc_w, fc_b, BOARD_SIZE2 + 1);
+
+		net_ = SoftmaxOutput("softmax", fc, data_label);
 	}
 
 	PolicyNet::~PolicyNet()
