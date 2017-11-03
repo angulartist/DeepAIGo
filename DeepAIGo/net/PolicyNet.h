@@ -24,8 +24,8 @@ namespace DeepAIGo
 		virtual void InitNetwork();
 
 	private:
-		boost::multi_array<mx_float, 4> make_input(const Board& board, int symmetric);
-		boost::multi_array<mx_float, 2> convert_output(const Tensor& output, int symmetric);
+		Tensor make_input(const Board& board, int symmetric);
+		size_t symmetric_idx(const Point& pt, int symmetric) const;
 
 	protected:
 		mxnet::cpp::Symbol net_;

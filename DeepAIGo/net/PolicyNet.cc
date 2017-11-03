@@ -52,13 +52,8 @@ namespace DeepAIGo
 		exec_->Forward(false);
 		NDArray::WaitAll();
 		
-		Tensor outputs { boost::extents[1][1][BOARD_SIZE * BOARD_SIZE] };
-
-		exec_->outputs[0].SyncCopyToCPU(outputs.data(), BOARD_SIZE2);
-
-		boost::array<Tensor::index, 3> dims = { { 1, BOARD_SIZE, BOARD_SIZE } };
-		outputs.reshape(dims);
-		auto output = convert_output(outputs, symmetric);
+		std::vector<mx_float> output(BOARD_SIZE2 + 1);
+		exec_->outputs[0].SyncCopyToCPU(output.data(), BOARD_SIZE2 + 1);
 
 		std::vector<ActionProb> ret;
 
@@ -70,10 +65,11 @@ namespace DeepAIGo
 
 				if (board.IsValidMove(pt) && !board.IsTrueEye(pt, board.GetCurrentPlayer()))
 				{
-					ret.emplace_back(std::make_tuple(pt, output[y][x]));
+					ret.emplace_back(std::make_tuple(pt, output[symmetric_idx(Point(x, y), symmetric)]));
 				}
 			}
 		}
+		ret.emplace_back(std::make_tuple(Pass, output.back()));
 
 		return ret;
 	}
@@ -90,48 +86,41 @@ namespace DeepAIGo
 		LoadCheckpoint("policy.params", exec_);
 	}
 
-	boost::multi_array<mx_float, 4> PolicyNet::make_input(const Board& board, int symmetric)
+	Tensor PolicyNet::make_input(const Board& board, int symmetric)
 	{
-		boost::multi_array<mx_float, 4> ret { boost::extents[1][process_.GetOutputDim()][BOARD_SIZE][BOARD_SIZE] };
+		Tensor ret { boost::extents[process_.GetOutputDim()][BOARD_SIZE][BOARD_SIZE] };
 
 		auto origin = process_.StateToTensor(board);
 
 		switch (symmetric)
 		{
-		case 0: ret[0] = origin; break;
-		case 1: ret[0] = Symmetrics::Rot90(origin); break;
-		case 2: ret[0] = Symmetrics::Rot180(origin); break;
-		case 3: ret[0] = Symmetrics::Rot270(origin); break;
-		case 4: ret[0] = Symmetrics::FlipUD(origin); break;
-		case 5: ret[0] = Symmetrics::FlipLR(origin); break;
-		case 6: ret[0] = Symmetrics::Diag1(origin); break;
-		case 7: ret[0] = Symmetrics::Diag2(origin); break;
+		case 0: ret = origin; break;
+		case 1: ret = Symmetrics::Rot90(origin); break;
+		case 2: ret = Symmetrics::Rot180(origin); break;
+		case 3: ret = Symmetrics::Rot270(origin); break;
+		case 4: ret = Symmetrics::FlipUD(origin); break;
+		case 5: ret = Symmetrics::FlipLR(origin); break;
+		case 6: ret = Symmetrics::Diag1(origin); break;
+		case 7: ret = Symmetrics::Diag2(origin); break;
 		default: throw std::runtime_error("Invalid symmetric");
 		}
 
 		return ret;
 	}
 
-	boost::multi_array<mx_float, 2> PolicyNet::convert_output(const Tensor& outputs, int symmetric)
+	size_t PolicyNet::symmetric_idx(const Point& pt, int symmetric) const
 	{
-		boost::multi_array<mx_float, 2> ret { boost::extents[BOARD_SIZE][BOARD_SIZE] };		
-
-		Tensor tmp { boost::extents[1][BOARD_SIZE][BOARD_SIZE] };
-		switch (symmetric)
+		switch(symmetric)
 		{
-		case 0: tmp = outputs; break;
-		case 1: tmp = Symmetrics::DRot90(outputs); break;
-		case 2: tmp = Symmetrics::DRot180(outputs); break;
-		case 3: tmp = Symmetrics::DRot270(outputs); break;
-		case 4: tmp = Symmetrics::DFlipUD(outputs); break;
-		case 5: tmp = Symmetrics::DFlipLR(outputs); break;
-		case 6: tmp = Symmetrics::DDiag1(outputs); break;
-		case 7: tmp = Symmetrics::DDiag2(outputs); break;
-		default: throw std::runtime_error("Invalid symmetric");
+		case 0: return POS(pt);
+		case 1: return POS(Point(pt.Y, BOARD_SIZE - pt.X - 1));
+		case 2: return POS(Point(BOARD_SIZE - pt.X - 1, BOARD_SIZE - pt.Y - 1));
+		case 3: return POS(Point(BOARD_SIZE - pt.Y - 1, pt.X));
+		case 4: return POS(Point(pt.X, BOARD_SIZE - pt.Y - 1));
+		case 5: return POS(Point(BOARD_SIZE - pt.X - 1, pt.Y));
+		case 6: return POS(Point(pt.Y , pt.X));
+		case 7: return POS(Point(pt.X, BOARD_SIZE - pt.Y - 1));
+		default: return 0;
 		}
-
-		memcpy(ret.data(), tmp.data(), ret.num_elements() * sizeof(mx_float));
-
-		return ret;
 	}
 }
