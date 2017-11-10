@@ -65,7 +65,7 @@ namespace DeepAIGo
 
 				if (board.IsValidMove(pt) && !board.IsTrueEye(pt, board.GetCurrentPlayer()))
 				{
-					ret.emplace_back(std::make_tuple(pt, output[symmetric_idx(Point(x, y), symmetric)]));
+					ret.emplace_back(std::make_tuple(pt, output[symmetric_idx(pt, symmetric)]));
 				}
 			}
 		}

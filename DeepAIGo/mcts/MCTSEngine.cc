@@ -26,7 +26,7 @@ namespace DeepAIGo
         std::vector<std::thread> threads(Threads);
         threads[0] = std::thread(&MCTSEngine::evaluate, this);
 
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < 1; ++i)
         {
             for (int j = 1; j < Threads; ++j)
             {
@@ -72,6 +72,7 @@ namespace DeepAIGo
 
         while (node->HasChild())
         {
+            if (cpy.IsEnded()) break;
             node = node->Select();
             cpy.DoMove(node->GetAction());
         }
@@ -93,12 +94,8 @@ namespace DeepAIGo
 
                 for (int i = 0; i < policy_que_.size(); ++i)
                 {
-                    std::uniform_int_distribution<int> dist(0, 7);
-                    std::mt19937 rand((unsigned int)time(NULL));
-
                     policy_que_[i].node->Expand(policy_->EvalState(
-                        policy_que_[i].board, dist(rand)
-                    ));
+                        policy_que_[i].board, 0));
                 }
 
                 policy_que_.clear();

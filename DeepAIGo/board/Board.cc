@@ -360,7 +360,7 @@ namespace DeepAIGo
 
 		for (int y = BOARD_SIZE - 1; y >= 0; --y)
 		{
-			std::cout  << std::setw(2) << std::setfill('0') << y << " ";
+			std::cout  << std::setw(2) << std::setfill('0') << y+1 << " ";
 
 			for (int x = 0; x < BOARD_SIZE; ++x)
 			{
@@ -392,7 +392,7 @@ namespace DeepAIGo
 
 		for (int y = BOARD_SIZE - 1; y >= 0; --y)
 		{
-			ss << std::setw(2) << std::setfill('0') << y << " ";
+			ss << std::setw(2) << std::setfill('0') << y+1 << " ";
 
 			for (int x = 0; x < BOARD_SIZE; ++x)
 			{
