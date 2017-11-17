@@ -10,39 +10,54 @@
 
 namespace DeepAIGo
 {
+	//! 전처리기 타입
 	enum class ProcessorType
 	{
-		STONE_COLOR,
-		ONES,
-		TURNS_SINCE,
-		LIBERTIES,
-		CAPTURE_SIZE,
-		SELF_ATARI_SIZE,
-		LIBERTIES_AFTER_MOVE,
-		SENSIBLENESS,
-		ZEROS,
-		PLAYER_COLOR
+		STONE_COLOR,			//! 바둑돌 색상
+		ONES,					//! 1로 채워진 상수
+		TURNS_SINCE,			//! 몇 수 전에 놓였는지
+		LIBERTIES,				//! 활로 개수 (0~8)
+		CAPTURE_SIZE,			//! 두면 따낼 수 있는 개수 (0~8)
+		SELF_ATARI_SIZE,		//! 상대방이 뒀을 때 내가 잃을 돌의 개수 (0~8)
+		LIBERTIES_AFTER_MOVE,	//! 두고난 후 활로의 개수 (0~8)
+		SENSIBLENESS,			//! 바둑 규칙에 유효한지
+		ZEROS,					//! 0으로 채워진 상수
+		PLAYER_COLOR			//! 플레이어의 색상
 	};
 
+	//! 전처리
 	struct Processor
 	{
-		size_t output_dim_;
-		std::function<Tensor(const Board&)> impl_;
+		size_t output_dim_;							//! 출력 데이터의 깊이
+		std::function<Tensor(const Board&)> impl_;	//! 전처리 구현부
 
 		Processor() { }
+		/**
+		 * @param output_dim 출력 데이터의 깊이
+		 * @param impl 전처리 구현부
+		 **/
 		Processor(size_t output_dim, std::function<Tensor(const Board&)> impl) : impl_(impl), output_dim_(output_dim) { }
 	};
 
+	//! 전처리기
 	class Preprocess
 	{
 	public:
+		/**
+		 * @param process 전처리 목록
+		 **/
 		Preprocess(const std::vector<ProcessorType>& process);
 
+		//! 총 데이터의 깊이를 구합니다.
 		size_t GetOutputDim() const;
+		/** 바둑판 상태를 데이터로 변환합니다.
+		 * @return 변환된 데이터
+		 * @param board 바둑판 상태
+		 **/
 		Tensor StateToTensor(const Board& board);
 
 	private:
-		std::vector<Processor> process_;
-		size_t output_dim_;
+		std::vector<Processor> process_;	//! 전처리 목록
+		size_t output_dim_;					//! 총 데이터의 깊이
 	};
 }
