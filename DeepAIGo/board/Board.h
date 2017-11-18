@@ -136,6 +136,8 @@ namespace DeepAIGo
 		void ShowBoard() const;
 		//! 영토를 출력합니다.
 		void ShowTerritory() const;
+		//! 활로의 개수를 출력합니다.
+		void ShowLibertyCount() const;
 		//! 바둑판을 문자열로 내보냅니다.
 		std::string ToString() const;
 

@@ -264,7 +264,15 @@ namespace DeepAIGo
 	void Board::DoMove(const Point& pt, StoneType color, bool history)
 	{
 		if (!IsValidMove(pt))
+		{ 
+			std::cout << history_.size() << " (" << pt.X << ", " << pt.Y <<")" << std::endl;
+			ShowBoard();
+			ShowLibertyCount();
+
+			std::cout << IsOnBoard(pt) << std::endl << IsSuicide(pt) << std::endl << (int)(ko_ == pt) << std::endl << (int)(board_[POS(pt)] == StoneType::EMPTY) << std::endl;
+
 			throw std::runtime_error("Invalid move");
+		}
 
 		if (is_ended_)
 			throw std::runtime_error("Already ended");
@@ -381,6 +389,27 @@ namespace DeepAIGo
 		}
 	}
 
+	void Board::ShowLibertyCount() const
+	{
+		std::cout << "  ";
+		for (int i = 0; i < BOARD_SIZE; ++i)
+			std::cout  << (char)('A' + i);
+
+		std::cout  << std::endl;
+
+		for (int y = BOARD_SIZE - 1; y >= 0; --y)
+		{
+			std::cout  << std::setw(2) << std::setfill('0') << y+1 << " ";
+
+			for (int x = 0; x < BOARD_SIZE; ++x)
+			{
+				printf("%02d", liberty_count_[POS(Point(x, y))]);
+			}
+
+			std::cout  << std::endl;
+		}
+	}
+
 	std::string Board::ToString() const
 	{
 		std::stringstream ss;
@@ -464,6 +493,7 @@ namespace DeepAIGo
 				if (board_[POS(n)] == StoneType::EMPTY)
 				{
 					liberties_[POS(n)].insert(g);
+					liberties_[POS(g)].insert(n);
 				}
 				else
 				{
