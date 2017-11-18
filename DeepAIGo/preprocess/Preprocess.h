@@ -28,8 +28,10 @@ namespace DeepAIGo
 	//! 전처리
 	struct Processor
 	{
-		size_t output_dim_;							//! 출력 데이터의 깊이
-		std::function<Tensor(const Board&)> impl_;	//! 전처리 구현부
+		//! 출력 데이터의 깊이
+		size_t output_dim_;
+		//! 전처리 구현부
+		std::function<Tensor(const Board&)> impl_;
 
 		Processor() { }
 		/**
