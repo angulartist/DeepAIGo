@@ -155,18 +155,29 @@ namespace DeepAIGo
 		bool territory_floodfill(std::vector<int>& territory) const;
 
 	private:
-		StoneType current_player_; //! 현재 순서의 색상
-		bool is_ended_;			   //! 게임이 끝났는지 여부
-		Point ko_;				   //! 패의 위치
-		int white_captured_;	   //! 잡힌 백돌 개수
-		int black_captured_;	   //! 잡힌 흑돌 개수
+		//! 현재 순서의 색상
+		StoneType current_player_;
+		//! 게임이 끝났는지 여부
+		bool is_ended_;
+		//! 패의 위치
+		Point ko_;
+		//! 잡힌 백돌 개수
+		int white_captured_;
+		//! 잡힌 흑돌 개수
+		int black_captured_;
 
-		std::vector<StoneType> board_;		//! 바둑판 정보
-		std::vector<int> liberty_count_;	//! 활로 개수
-		std::vector<PointSet> liberties_;	//! 활로
-		std::vector<PointSet> groups_;		//! 돌 무리
+		//! 바둑판 정보
+		std::vector<StoneType> board_;
+		//! 활로 개수
+		std::vector<int> liberty_count_;
+		//! 활로
+		std::vector<PointSet> liberties_;
+		//! 돌 무리
+		std::vector<PointSet> groups_;
 
-		PointArr history_;	//! 게임 기록
-		PointArr handicap_;	//! 접바둑 돌
+		//! 게임 기록
+		PointArr history_;
+		//! 접바둑 돌
+		PointArr handicap_;
 	};
 }

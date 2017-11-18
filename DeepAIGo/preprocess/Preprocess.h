@@ -57,7 +57,9 @@ namespace DeepAIGo
 		Tensor StateToTensor(const Board& board);
 
 	private:
-		std::vector<Processor> process_;	//! 전처리 목록
-		size_t output_dim_;					//! 총 데이터의 깊이
+		//! 전처리 목록
+		std::vector<Processor> process_;
+		//! 총 데이터의 깊이
+		size_t output_dim_;
 	};
 }

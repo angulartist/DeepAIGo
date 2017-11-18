@@ -76,9 +76,13 @@ namespace DeepAIGo
 		GtpCmd parse_command(const std::vector<std::string>& tokens);
 
 	private:
-		std::string name_;		//! AI의 이름
-		std::string version_;	//! AI 버전
-		bool is_run_;			//! 엔진 작동 여부
-		int cmd_idx_;			//! 실행된 명령어 개수
+		//! AI의 이름
+		std::string name_;
+		//! AI 버전
+		std::string version_;
+		//! 엔진 작동 여부
+		bool is_run_;
+		//! 실행된 명령어 개수
+		int cmd_idx_;
 	};
 }

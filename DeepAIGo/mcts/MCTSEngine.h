@@ -52,14 +52,19 @@ namespace DeepAIGo
         void enqueue_policy(const Board& board, TreeNode::Ptr node);
 
     private:
-        PolicyNet::Ptr policy_;         //! Policy Network
-        
-        TreeNode::Ptr root_;            //! 최상위 노드
+        //! Policy Network
+        PolicyNet::Ptr policy_;
+        //! 최상위 노드
+        TreeNode::Ptr root_;
 
-        std::mutex mutex_;              //! 뮤택스
-        std::atomic<bool> stop_think_;  //! 생각을 멈춰야 하는지 여부
+        //! 뮤택스
+        std::mutex mutex_;
+        //! 생각을 멈춰야 하는지 여부
+        std::atomic<bool> stop_think_;
 
-        std::deque<PolicyParams> policy_que_;   //! Policy network 작업 큐
-        std::atomic<int> policy_que_cnt_;       //! Policy network에 등록된 작업 개수
+        //! Policy network 작업 큐
+        std::deque<PolicyParams> policy_que_;
+        //! Policy network에 등록된 작업 개수
+        std::atomic<int> policy_que_cnt_;
     };
 }

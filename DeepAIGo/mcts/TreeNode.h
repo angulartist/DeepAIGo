@@ -70,15 +70,23 @@ namespace DeepAIGo
         void update(int w, bool own);
 
     private:
-        Ptr parent_;                //! 부모 노드
-        std::deque<Ptr> children_;  //! 자식 노드
+        //! 부모 노드
+        Ptr parent_;
+        //! 자식 노드
+        std::deque<Ptr> children_;
 
-        Point action_;              //! 노드의 행동
-        std::atomic<float> P_;      //! 노드의 확률
-        std::atomic<int> W_;        //! 이긴 횟수
-        std::atomic<int> N_;        //! 방문 횟수
+        //! 노드의 행동
+        Point action_;
+        //! 노드의 확률
+        std::atomic<float> P_;
+        //! 이긴 횟수
+        std::atomic<int> W_;
+        //! 방문 횟수
+        std::atomic<int> N_;
 
-        bool is_expanded_;          //! 확장된 노드인지 여부
-        std::mutex mutex_;          //! 노드 확장 뮤텍스
+        //! 확장된 노드인지 여부
+        bool is_expanded_;
+        //! 노드 확장 뮤텍스
+        std::mutex mutex_;
     };
 }

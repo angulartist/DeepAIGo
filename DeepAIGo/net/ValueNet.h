@@ -26,10 +26,14 @@ namespace DeepAIGo
         virtual void InitNetwork();
 
     private:
-        mxnet::cpp::Symbol net_;    //! 신경망
-        Preprocess process_;        //! 전처리기
+        //! 신경망
+        mxnet::cpp::Symbol net_;
+        //! 전처리기
+        Preprocess process_;
 
-        mxnet::cpp::Executor* exec_;                        //! Executor
-        std::map<std::string, mxnet::cpp::NDArray> args_;   //! 신경망 파라메터 목록
+        //! Executor
+        mxnet::cpp::Executor* exec_;
+        //! 신경망 파라메터 목록
+        std::map<std::string, mxnet::cpp::NDArray> args_;
     };
 }
