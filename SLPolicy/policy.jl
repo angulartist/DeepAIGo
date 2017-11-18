@@ -14,7 +14,7 @@ function CreatePolicyNet(prefix::String="", epoch::Int=0)
 	layers = Array{mx.SymbolicNode,1}()
 	push!(layers, ConvFactory(data, 128, (5, 5), pad=(2, 2)))
 
-	for i = 2:7
+	for i = 2:12
 		conv = ConvFactory(layers[end], 128, (3, 3))
 
 		push!(layers, conv)

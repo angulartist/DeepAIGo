@@ -17,7 +17,7 @@ namespace DeepAIGo
 		std::vector<mxnet::cpp::Symbol> layers;
 		layers.emplace_back(ConvFactory(data, 128, Shape(5, 5), Shape(1, 1), Shape(2, 2), "0"));
 
-		for (int i = 1; i < 7; i++)
+		for (int i = 1; i < 11; i++)
 		{
 			layers.emplace_back(
 				ConvFactory(layers.back(), 128, Shape(3, 3), Shape(1, 1), Shape(1, 1), std::to_string(i)));
@@ -28,11 +28,7 @@ namespace DeepAIGo
 
 		auto flatten = Flatten(layers.back());
 
-		auto fc_w = Symbol("fullyconnected0_weight");
-		auto fc_b = Symbol("fullyconnected0_bias");
-		auto fc = FullyConnected(flatten, fc_w, fc_b, BOARD_SIZE2 + 1);
-
-		net_ = SoftmaxOutput("softmax", fc, data_label);
+		net_ = SoftmaxOutput("softmax", flatten, data_label);
 	}
 
 	PolicyNet::~PolicyNet()
