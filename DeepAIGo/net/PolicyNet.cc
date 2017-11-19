@@ -39,14 +39,17 @@ namespace DeepAIGo
 		std::vector<mxnet::cpp::Symbol> layers;
 		layers.emplace_back(ConvFactory(data, 128, Shape(5, 5), Shape(1, 1), Shape(2, 2), "0"));
 
-		for (int i = 1; i < 11; i++)
+		for (int i = 1; i < 12; i++)
 		{
 			layers.emplace_back(
 				ConvFactory(layers.back(), 128, Shape(3, 3), Shape(1, 1), Shape(1, 1), std::to_string(i)));
 		}
 	
-		layers.emplace_back(
-			ConvFactory(layers.back(), 1, Shape(1, 1), Shape(1, 1), Shape(0, 0), "7"));
+		Symbol conv_w("convolution12_weight"), conv_b("convolution12_bias");
+
+		layers.push_back(Convolution("convolution12", layers.back(),
+			conv_w, conv_b, Shape(1, 1),
+			1, Shape(1, 1), Shape(1, 1), Shape(0, 0)));
 
 		auto flatten = Flatten(layers.back());
 
@@ -70,8 +73,8 @@ namespace DeepAIGo
 		exec_->Forward(false);
 		NDArray::WaitAll();
 		
-		std::vector<mx_float> output(BOARD_SIZE2 + 1);
-		exec_->outputs[0].SyncCopyToCPU(output.data(), BOARD_SIZE2 + 1);
+		std::vector<mx_float> output(BOARD_SIZE2);
+		exec_->outputs[0].SyncCopyToCPU(output.data(), BOARD_SIZE2);
 
 		std::vector<ActionProb> ret;
 
@@ -87,7 +90,6 @@ namespace DeepAIGo
 				}
 			}
 		}
-		ret.emplace_back(std::make_tuple(Pass, output.back()));
 
 		return ret;
 	}
