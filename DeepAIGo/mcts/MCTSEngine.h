@@ -44,9 +44,6 @@ namespace DeepAIGo
     class MCTSEngine
     {
     public:
-        const int Threads = 4; //! 사용 스레드 개수
-
-    public:
         MCTSEngine();
 
         /** 착수 위치를 결정합니다.

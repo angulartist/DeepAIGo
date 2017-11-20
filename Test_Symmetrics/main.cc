@@ -76,9 +76,5 @@ int main()
     printf("\n[diag1]\n");
     PrintTensor(diag1);
 
-    auto diag2 = DeepAIGo::Symmetrics::Diag2(a);
-    printf("\n[diag2]\n");
-    PrintTensor(diag2);
-
     getchar();
 }

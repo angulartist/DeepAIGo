@@ -73,8 +73,10 @@ namespace DeepAIGo
 		exec_->Forward(false);
 		NDArray::WaitAll();
 		
-		std::vector<mx_float> output(BOARD_SIZE2);
+		Tensor output { boost::extents[1][BOARD_SIZE][BOARD_SIZE] };
 		exec_->outputs[0].SyncCopyToCPU(output.data(), BOARD_SIZE2);
+
+		auto converted = make_output(output, symmetric);
 
 		std::vector<ActionProb> ret;
 
@@ -86,7 +88,7 @@ namespace DeepAIGo
 
 				if (board.IsValidMove(pt) && !board.IsTrueEye(pt, board.GetCurrentPlayer()))
 				{
-					ret.emplace_back(std::make_tuple(pt, output[symmetric_idx(pt, symmetric)]));
+					ret.emplace_back(std::make_tuple(pt, converted[0][y][x]));
 				}
 			}
 		}
@@ -128,19 +130,23 @@ namespace DeepAIGo
 		return ret;
 	}
 
-	size_t PolicyNet::symmetric_idx(const Point& pt, int symmetric) const
+	Tensor PolicyNet::make_output(const Tensor& output, int symmetric)
 	{
-		switch(symmetric)
+		Tensor ret { boost::extents[1][BOARD_SIZE][BOARD_SIZE] };
+
+		switch (symmetric)
 		{
-		case 0: return POS(pt);
-		case 1: return POS(Point(pt.Y, BOARD_SIZE - pt.X - 1));
-		case 2: return POS(Point(BOARD_SIZE - pt.X - 1, BOARD_SIZE - pt.Y - 1));
-		case 3: return POS(Point(BOARD_SIZE - pt.Y - 1, pt.X));
-		case 4: return POS(Point(pt.X, BOARD_SIZE - pt.Y - 1));
-		case 5: return POS(Point(BOARD_SIZE - pt.X - 1, pt.Y));
-		case 6: return POS(Point(pt.Y , pt.X));
-		case 7: return POS(Point(pt.X, BOARD_SIZE - pt.Y - 1));
-		default: return 0;
+		case 0: ret = output; break;
+		case 1: ret = Symmetrics::DRot90(output); break;
+		case 2: ret = Symmetrics::DRot180(output); break;
+		case 3: ret = Symmetrics::DRot270(output); break;
+		case 4: ret = Symmetrics::DFlipUD(output); break;
+		case 5: ret = Symmetrics::DFlipLR(output); break;
+		case 6: ret = Symmetrics::DDiag1(output); break;
+		case 7: ret = Symmetrics::DDiag2(output); break;
+		default: throw std::runtime_error("Invalid symmetric");
 		}
+
+		return ret;
 	}
 }

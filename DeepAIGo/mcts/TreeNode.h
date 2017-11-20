@@ -76,8 +76,8 @@ namespace DeepAIGo
     
         //! 노드의 방문 횟수를 구합니다.
         int GetVisits() const;
-        //! 노드의 가치를 계산합니다.
-        float GetValue() const;
+        //! 노드의 Q값을 계산합니다.
+        float GetQValue() const;
         /** 노드의 값을 회귀적으로 갱신합니다.
          * @param w 이겼는지 여부
          * @param own 자신의 순서에 맞는 노드인지 여부

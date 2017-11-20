@@ -60,7 +60,12 @@ namespace DeepAIGo
 		 * @param symmetric 바둑판 변형 타입
 		 **/
 		Tensor make_input(const Board& board, int symmetric);
-		size_t symmetric_idx(const Point& pt, int symmetric) const;
+		/** 출력 데이터를 만듭니다.
+		 * @return 출력 데이터
+		 * @param output 신경망 출력 값
+		 * @param symmetric 바둑판 변형 타입
+		 **/
+		Tensor make_output(const Tensor& output, int symmetric);
 
 	protected:
 		//! 신경망

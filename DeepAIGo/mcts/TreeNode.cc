@@ -104,16 +104,11 @@ namespace DeepAIGo
         return N_.load();
     }
 
-    float TreeNode::GetValue() const
+    float TreeNode::GetQValue() const
     {
-        size_t total_games = 0;
-        for (auto& n : children_)
-            total_games += n->GetVisits();
-
         float q = (GetVisits()) ? W_.load() / GetVisits() : 0;
-        float u = TreeNode::puct * P_.load() * std::sqrt(total_games) / (1.f + GetVisits());
 
-        return q + u;
+        return q;
     }
 
     void TreeNode::Update(int w, bool own)

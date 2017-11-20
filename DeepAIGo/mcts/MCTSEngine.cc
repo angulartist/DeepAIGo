@@ -38,6 +38,8 @@ namespace DeepAIGo
 
     Point MCTSEngine::GenMove(const Board& board)
     {
+        const int Threads = std::thread::hardware_concurrency();
+
         if (!root_->HasChild())
         {
             root_->Expand(policy_->EvalState(board, 0));
@@ -65,6 +67,18 @@ namespace DeepAIGo
         for (int j = 0; j < Threads; ++j)
             if (threads[j].joinable())
                 threads[j].join();
+
+        /*float max_q = -999.f;
+        for (const auto& n : root_->GetChildren())
+        {
+            float q = n->GetQValue();
+            
+            if (max_q < q)
+                max_q = q;
+        }
+
+        if (max_q < -0.8)
+            return Resign;*/
 
         root_ = root_->Select();
 
@@ -116,8 +130,11 @@ namespace DeepAIGo
 
                 for (int i = 0; i < policy_que_.size(); ++i)
                 {
+                    std::uniform_int_distribution<int> dist(0, 7);
+                    std::mt19937 engine((unsigned int)time(NULL));
+
                     policy_que_[i].node->Expand(policy_->EvalState(
-                        policy_que_[i].board, 0));
+                        policy_que_[i].board, dist(engine)));
                 }
 
                 policy_que_.clear();

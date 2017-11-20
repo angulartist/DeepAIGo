@@ -356,7 +356,7 @@ namespace DeepAIGo
 		while (territory_floodfill(territory));
 
 		float black_score = white_captured_;
-		float white_score = black_captured_ + KOMI;
+		float white_score = black_captured_;
 
 		for (size_t i = 0; i < BOARD_SIZE2; ++i)
 		{

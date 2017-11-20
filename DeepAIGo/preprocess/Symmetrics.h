@@ -113,11 +113,48 @@ namespace DeepAIGo
          * @param tensor 입력 데이터
          **/
         static Tensor Diag1(const Tensor& tensor) { return TensorUtil::Transpose(tensor); }
-         /** 데이터를 대각선2를 기준으로 뒤집습니다.
+        /** 데이터를 대각선2을 기준으로 뒤집습니다.
          * @return 변환된 데이터
          * @param tensor 입력 데이터
          **/
         static Tensor Diag2(const Tensor& tensor) { return TensorUtil::Transpose(
                                                             TensorUtil::Rotl90(tensor)); }
+        
+        /** 데이터를 반대로 90도 회전합니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DRot90(const Tensor& tensor) { return TensorUtil::Rotr90(tensor); }
+         /** 데이터를 반대로 180도 회전합니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DRot180(const Tensor& tensor) { return TensorUtil::Rotr180(tensor); }
+         /** 데이터를 반대로 270도 회전합니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DRot270(const Tensor& tensor) { return TensorUtil::Rotr270(tensor); }
+         /** 데이터를 반대로 상하로 뒤집습니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DFlipUD(const Tensor& tensor) { return TensorUtil::FlipUD(tensor); }
+         /** 데이터를 반대로 좌우로 뒤집습니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DFlipLR(const Tensor& tensor) { return TensorUtil::FlipLR(tensor); }
+         /** 데이터를 반대로 대각선1을 기준으로 뒤집습니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DDiag1(const Tensor& tensor) { return TensorUtil::Transpose(tensor); }
+        /** 데이터를 반대로 대각선2를 기준으로 뒤집습니다.
+         * @return 변환된 데이터
+         * @param tensor 입력 데이터
+         **/
+        static Tensor DDiag2(const Tensor& tensor) { return TensorUtil::Rotr90(
+                                                            TensorUtil::Transpose(tensor)); }
     };
 }
