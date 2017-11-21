@@ -56,6 +56,9 @@ namespace DeepAIGo
          **/
         void DoMove(const Point& pt);
 
+        //! 탐색 트리를 초기화합니다.
+        void Clear();
+
     private:
         /** playout을 수행하는 스레드
          * @param board 바둑판 상태

@@ -52,6 +52,7 @@ namespace DeepAIGo
 		else if (command.command == GtpCmdType::CLEAR_BOARD)
 		{
 			board_.Clear();
+			engine_.Clear();
 		}
 		else if (command.command == GtpCmdType::SHOW_BOARD)
 		{

@@ -51,8 +51,13 @@ namespace DeepAIGo
          **/
         TreeNode(Point action = Pass, float P = 1.0f, Ptr parent = nullptr);
 
-        //! 가장 적합한 노드를 선택합니다.
+        //! 가장 적합한 노드를 선택합니다./
         TreeNode::Ptr Select();
+        /** 착수할 노드를 구합니다.
+         * @return 착수할 노드
+         * @param temperature τ값
+         **/
+        TreeNode::Ptr Play(float temperature);
         /** 노드를 확장합니다.
          * @param probs 유효 행동과 해당 확률들
          **/
@@ -60,6 +65,8 @@ namespace DeepAIGo
 
         //! 현재 노드의 행동을 구합니다.
         const Point& GetAction() const;
+        //! 현재 노드의 확률을 구합니다.
+        float GetPrior() const;
         /** 부모 노드를 설정합니다.
          * @param parent 새로운 부모 노드
          **/

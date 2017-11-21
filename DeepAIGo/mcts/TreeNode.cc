@@ -55,6 +55,29 @@ namespace DeepAIGo
         return children_[max_idx];
     }
 
+    TreeNode::Ptr TreeNode::Play(float temperature)
+    {
+        float sum = 0;
+        for (auto& n : children_)
+            sum += std::pow(n->GetVisits(), 1/temperature);
+
+        size_t max_idx = 0;
+        float max_value = -9999.f;
+
+        for (size_t i = 0; i < children_.size(); ++i)
+        {
+            float value = std::pow(children_[i]->GetVisits(), 1/temperature);
+
+            if (max_value < value)
+            {
+                max_value = value;
+                max_idx = i;
+            }
+        }
+
+        return children_[max_idx];
+    }
+
     void TreeNode::Expand(const std::vector<ActionProb>& probs)
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -72,6 +95,11 @@ namespace DeepAIGo
     const Point& TreeNode::GetAction() const
     {
         return action_;
+    }
+
+    float TreeNode::GetPrior() const
+    {
+        return P_.load();
     }
 
     void TreeNode::SetParent(TreeNode::Ptr parent)

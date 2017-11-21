@@ -50,7 +50,8 @@ namespace DeepAIGo
         std::vector<std::thread> threads(Threads);
         threads[0] = std::thread(&MCTSEngine::evaluate, this);
 
-        for (int i = 0; i < 1; ++i)
+        int max_playout = (board.GetHistory().size() > 4) ? 10 : 3;
+        for (int i = 0; i < max_playout; ++i)
         {
             for (int j = 1; j < Threads; ++j)
             {
@@ -80,7 +81,9 @@ namespace DeepAIGo
         if (max_q < -0.8)
             return Resign;*/
 
-        root_ = root_->Select();
+        float temperature = 1.f;
+        
+        root_ = root_->Play(temperature);
 
         return root_->GetAction();
     }
@@ -99,6 +102,11 @@ namespace DeepAIGo
         {
             root_ = std::make_shared<TreeNode>(pt);
         }
+    }
+
+    void MCTSEngine::Clear()
+    {
+        root_ = std::make_shared<TreeNode>();
     }
 
     void MCTSEngine::playout(const Board& board)
@@ -131,7 +139,7 @@ namespace DeepAIGo
                 for (int i = 0; i < policy_que_.size(); ++i)
                 {
                     std::uniform_int_distribution<int> dist(0, 7);
-                    std::mt19937 engine((unsigned int)time(NULL));
+                    std::mt19937 engine((unsigned int)time(NULL) + i);
 
                     policy_que_[i].node->Expand(policy_->EvalState(
                         policy_que_[i].board, dist(engine)));
